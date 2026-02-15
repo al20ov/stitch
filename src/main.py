@@ -32,13 +32,23 @@ class StitchWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.init_template()
-        self.output_widget0 = OutputWidget()
+        self.output_widget0 = OutputWidget(
+            width=200, height=100, output_name="ASUS monitor"
+        )
         self.fixed.put(self.output_widget0, 0, 0)
 
         self.controller: Gtk.GestureDrag = Gtk.GestureDrag()
         self.controller.connect("drag-begin", self.on_begin)
         self.controller.connect("drag-update", self.on_update)
         self.output_widget0.add_controller(self.controller)
+
+        button = Gtk.Button(label="Update")
+        button.connect("clicked", self.update_widget)
+        self.fixed.put(button, 10, 10)
+
+    def update_widget(self, button):
+        self.output_widget0.update_dimensions(300, 200)
+        self.output_widget0.set_label_text("Updated!")
 
     def on_begin(self, controller, start_x, start_y):
         self.diff = tuple(

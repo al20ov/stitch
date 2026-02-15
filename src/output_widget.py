@@ -16,3 +16,10 @@ class OutputWidget(Gtk.Box):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.init_template()
+
+    def update_dimensions(self, width, height):
+        self.width = width
+        self.height = height
+
+    def set_label_text(self, text):
+        self.output_name = text
