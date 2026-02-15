@@ -1,0 +1,14 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $stitch_window: Adw.ApplicationWindow {
+  default-width: 800;
+  default-height: 600;
+  title: _("Stitch");
+
+  Box {
+    Label {
+      label: bind template.main_text;
+    }
+  }
+}
