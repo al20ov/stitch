@@ -1,0 +1,18 @@
+using Gtk 4.0;
+
+template $output_widget: Gtk.Box {
+  css-classes: [
+    "card",
+  ];
+
+  width-request: bind template.width;
+  height-request: bind template.height;
+
+  Label {
+    label: bind template.output_name;
+    halign: center;
+    valign: center;
+    hexpand: true;
+    vexpand: true;
+  }
+}
