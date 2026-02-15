@@ -24,7 +24,12 @@ class Stitch(Adw.Application):
 class StitchWindow(Adw.ApplicationWindow):
     __gtype_name__ = "stitch_window"
 
-    main_text = GObject.Property(type=str, default="Default Text")
+    fixed = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.init_template()
+        self.fixed.put(Gtk.Label(label="hello"), 0, 0)
 
 
 if __name__ == "__main__":
