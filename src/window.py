@@ -32,7 +32,13 @@ class StitchWindow(Adw.ApplicationWindow):
             controller.connect("drag-update", self.on_update)
             self.controllers.append(controller)
 
-            output = OutputWidget(width=100, height=100, output_name=key)
+            output = OutputWidget(
+                width=100,
+                height=100,
+                make=value["make"],
+                model=value["model"],
+                name=key,
+            )
             output.add_controller(controller)
             self.fixed.put(output, val, 0)
             self.outputs.append(output)

@@ -9,7 +9,9 @@ from gi.repository import GObject, Gtk
 class OutputWidget(Gtk.Box):
     __gtype_name__ = "output_widget"
 
-    output_name = GObject.Property(type=str, default="Text")
+    make = GObject.Property(type=str, default="")
+    model = GObject.Property(type=str, default="")
+    name = GObject.Property(type=str, default="")
     width = GObject.Property(type=int, default=100)
     height = GObject.Property(type=int, default=100)
 
@@ -21,5 +23,11 @@ class OutputWidget(Gtk.Box):
         self.width = width
         self.height = height
 
-    def set_label_text(self, text):
-        self.output_name = text
+    def set_make(self, make):
+        self.make = make
+
+    def set_model(self, model):
+        self.model = model
+
+    def set_name(self, name):
+        self.name = name

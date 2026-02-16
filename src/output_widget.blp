@@ -8,15 +8,39 @@ template $output_widget: Gtk.Box {
   width-request: bind template.width;
   height-request: bind template.height;
 
-  Label {
-    label: bind template.output_name;
+  Gtk.Box {
+    orientation: vertical;
+    spacing: 6;
     halign: center;
     valign: center;
     hexpand: true;
     vexpand: true;
 
-    css-classes: [
-      "heading",
-    ];
+    Label {
+      label: bind template.make;
+
+      css-classes: [
+        "heading",
+      ];
+
+      wrap: true;
+      ellipsize: end;
+    }
+
+    Label {
+      label: bind template.model;
+      wrap: true;
+      ellipsize: end;
+    }
+
+    Label {
+      label: bind template.name;
+
+      css-classes: [
+        "caption",
+      ];
+
+      ellipsize: end;
+    }
   }
 }
