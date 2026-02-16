@@ -3,6 +3,7 @@ using Gtk 4.0;
 template $output_widget: Gtk.Box {
   css-classes: [
     "card",
+    "activatable",
   ];
 
   width-request: bind template.width;
@@ -30,6 +31,11 @@ template $output_widget: Gtk.Box {
     Label {
       label: bind template.model;
       wrap: true;
+
+      css-classes: [
+        "monospace",
+      ];
+
       ellipsize: end;
     }
 
@@ -37,6 +43,7 @@ template $output_widget: Gtk.Box {
       label: bind template.name;
 
       css-classes: [
+        "dimmed",
         "caption",
       ];
 
