@@ -1,12 +1,10 @@
-import operator
-
 import gi
 
 from utils.niri import Niri
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, GObject, Gtk
+from gi.repository import Adw, Gtk
 
 from output_widget import OutputWidget
 
@@ -40,30 +38,47 @@ class StitchWindow(Adw.ApplicationWindow):
             self.outputs.append(output)
 
     def on_begin(self, controller: Gtk.GestureDrag, start_x, start_y):
-        target_widget: Gtk.Widget = controller.get_widget()
+        target_widget = controller.get_widget()
 
-        self.diff = tuple(
-            map(
-                operator.sub,
-                self.fixed.get_child_position(target_widget),
-                self.get_pointer_position(),
+        if target_widget is not None:
+            current_pos = self.fixed.get_child_position(target_widget)
+            pointer_pos = self.get_pointer_position()
+
+            assert pointer_pos is not None
+
+            self.diff = (
+                current_pos[0] - pointer_pos[0],
+                current_pos[1] - pointer_pos[1],
             )
-        )
 
     def on_update(self, controller: Gtk.GestureDrag, offset_x, offset_y):
-        target_widget: Gtk.Widget = controller.get_widget()
+        target_widget = controller.get_widget()
 
-        move = map(operator.add, self.get_pointer_position(), self.diff)
+        if target_widget is not None:
+            pointer_pos = self.get_pointer_position()
+            assert pointer_pos is not None
+            px, py = pointer_pos
 
-        max_width = self.fixed.get_width() - target_widget.get_width()
-        max_height = self.fixed.get_height() - target_widget.get_height()
-        move_x, move_y = map(min, (max_width, max_height), map(max, (0, 0), move))
+            move_x = px + self.diff[0]
+            move_y = py + self.diff[1]
 
-        self.fixed.move(target_widget, move_x, move_y)
+            max_width = self.fixed.get_width() - target_widget.get_width()
+            max_height = self.fixed.get_height() - target_widget.get_height()
+
+            final_x = max(0, min(move_x, max_width))
+            final_y = max(0, min(move_y, max_height))
+
+            self.fixed.move(target_widget, final_x, final_y)
 
     def get_pointer_position(self):
-        pointer: Gdk.Device = self.get_display().get_default_seat().get_pointer()
-        _, px, py, _ = (
-            self.fixed.get_native().get_surface().get_device_position(pointer)
-        )
-        return self.translate_coordinates(self.fixed, px, py)
+        if (
+            (display := self.get_display())
+            and (seat := display.get_default_seat())
+            and (pointer := seat.get_pointer())
+            and (native := self.get_native())
+            and (surface := native.get_surface())
+        ):
+            _, px, py, _ = surface.get_device_position(pointer)
+            if coords := self.translate_coordinates(self.fixed, px, py):
+                fx, fy = coords
+                return (fx, fy)
