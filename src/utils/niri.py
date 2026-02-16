@@ -25,19 +25,5 @@ class Niri:
             chunks.append(data)
 
         response = b"".join(chunks).decode("utf-8")
-        return json.loads(response)
-
-
-if __name__ == "__main__":
-    try:
-        niri = Niri()
-
-        outputs_dict = niri.outputs.get("Ok", {}).get("Outputs", {})
-
-        for output_name, output_data in outputs_dict.items():
-            vrr_supported = output_data.get("vrr_supported", "N/A")
-
-            print(f"{output_name}: VRR supported: {vrr_supported}")
-
-    except (ValueError, FileNotFoundError, ConnectionRefusedError) as e:
-        print(f"Error communicating with Niri socket: {e}")
+        data = json.loads(response)
+        return data.get("Ok", {}).get("Outputs", {})
