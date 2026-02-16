@@ -45,10 +45,10 @@ class StitchWindow(Adw.ApplicationWindow):
             self.outputs.append(output)
 
     def on_begin(self, controller: Gtk.GestureDrag, _start_x, _start_y):
-        target_widget = controller.get_widget()
-        assert target_widget is not None
+        target = controller.get_widget()
+        assert target is not None
 
-        current_pos = self.fixed.get_child_position(target_widget)
+        current_pos = self.fixed.get_child_position(target)
         px, py = self.get_pointer_position()
 
         self.diff = (
@@ -57,66 +57,64 @@ class StitchWindow(Adw.ApplicationWindow):
         )
 
     def on_update(self, controller: Gtk.GestureDrag, _offset_x, _offset_y):
-        snap_threshold = 10.0
-
-        target_widget = controller.get_widget()
-        assert target_widget is not None
+        snap_threshold = 16.0
+        target = controller.get_widget()
+        assert target is not None
 
         px, py = self.get_pointer_position()
-
         move_x = px + self.diff[0]
         move_y = py + self.diff[1]
 
-        max_width = self.fixed.get_width() - target_widget.get_width()
-        max_height = self.fixed.get_height() - target_widget.get_height()
+        target_width, target_height = target.get_width(), target.get_height()
 
-        final_move_x = move_x
-        final_move_y = move_y
-        min_dx = snap_threshold
-        min_dy = snap_threshold
+        best_dx = snap_threshold
+        best_dy = snap_threshold
 
-        target_width = target_widget.get_width()
-        target_height = target_widget.get_height()
+        final_x, final_y = move_x, move_y
 
         for other in self.outputs:
-            if other == target_widget:
+            if other == target:
                 continue
 
             other_pos = self.fixed.get_child_position(other)
-            other_width = other.get_width()
-            other_height = other.get_height()
+            other_width, other_height = other.get_width(), other.get_height()
 
-            x_candidates = [
-                other_pos[0] + other_width,
-                other_pos[0] - target_width,
-                other_pos[0],
-                other_pos[0] + other_width - target_width,
-            ]
-            for x in x_candidates:
-                d = abs(move_x - x)
-                if d < min_dx:
-                    min_dx = d
-                    final_move_x = x
+            if (
+                move_y < other_pos[1] + other_height + snap_threshold
+                and move_y + target_height > other_pos[1] - snap_threshold
+            ):
+                x_edges = [
+                    other_pos[0],
+                    other_pos[0] + other_width,
+                    other_pos[0] - target_width,
+                    other_pos[0] + other_width - target_width,
+                ]
+                for x in x_edges:
+                    if (d := abs(move_x - x)) < best_dx:
+                        best_dx = d
+                        final_x = x
 
-            y_candidates = [
-                other_pos[1] + other_height,
-                other_pos[1] - target_height,
-                other_pos[1],
-                other_pos[1] + other_height - target_height,
-            ]
-            for y in y_candidates:
-                d = abs(move_y - y)
-                if d < min_dy:
-                    min_dy = d
-                    final_move_y = y
+            if (
+                move_x < other_pos[0] + other_width + snap_threshold
+                and move_x + target_width > other_pos[0] - snap_threshold
+            ):
+                y_edges = [
+                    other_pos[1],
+                    other_pos[1] + other_height,
+                    other_pos[1] - target_height,
+                    other_pos[1] + other_height - target_height,
+                ]
+                for y in y_edges:
+                    if (d := abs(move_y - y)) < best_dy:
+                        best_dy = d
+                        final_y = y
 
-        move_x = final_move_x
-        move_y = final_move_y
+        max_w = self.fixed.get_width() - target_width
+        max_h = self.fixed.get_height() - target_height
 
-        final_x = max(0, min(move_x, max_width))
-        final_y = max(0, min(move_y, max_height))
-
-        self.fixed.move(target_widget, final_x, final_y)
+        self.fixed.move(
+            target, max(0, min(final_x, max_w)), max(0, min(final_y, max_h))
+        )
 
     def on_end(self, controller: Gtk.GestureDrag, offset_x, offset_y):
         # TODO: Add update "real" position for final export to outputs.kdl
