@@ -15,6 +15,9 @@ class OutputWidget(Gtk.Box):
     width = GObject.Property(type=int, default=100)
     height = GObject.Property(type=int, default=100)
 
+    x = GObject.Property(type=int, default=0)
+    y = GObject.Property(type=int, default=0)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.init_template()
@@ -22,6 +25,10 @@ class OutputWidget(Gtk.Box):
     def update_dimensions(self, width, height):
         self.width = width
         self.height = height
+
+    def update_position(self, x, y):
+        self.x = x
+        self.y = y
 
     def set_make(self, make):
         self.make = make

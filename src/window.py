@@ -24,9 +24,22 @@ class StitchWindow(Adw.ApplicationWindow):
         self.outputs: list[OutputWidget] = []
         self.controllers: list[Gtk.GestureDrag] = []
 
-        val = 0
-
         for key, value in self.niri.outputs.items():
+            details = self.niri.get_output_details(key)
+            if not details:
+                continue
+
+            log_width = details["logical_size"]["width"]
+            log_height = details["logical_size"]["height"]
+
+            log_x = details["logical_position"]["x"]
+            log_y = details["logical_position"]["y"]
+
+            scaled_width = int(log_width / 10)
+            scaled_height = int(log_height / 10)
+            scaled_x = int(log_x / 10)
+            scaled_y = int(log_y / 10)
+
             controller: Gtk.GestureDrag = Gtk.GestureDrag.new()
             controller.connect("drag-begin", self.on_begin)
             controller.connect("drag-update", self.on_update)
@@ -34,14 +47,16 @@ class StitchWindow(Adw.ApplicationWindow):
             self.controllers.append(controller)
 
             output = OutputWidget(
-                width=384,
-                height=216,
+                width=scaled_width,
+                height=scaled_height,
                 make=value["make"],
                 model=value["model"],
                 name=key,
+                x=scaled_x,
+                y=scaled_y,
             )
             output.add_controller(controller)
-            self.fixed.put(output, val, 0)
+            self.fixed.put(output, scaled_x, scaled_y)
             self.outputs.append(output)
 
     def on_begin(self, controller: Gtk.GestureDrag, _start_x, _start_y):
@@ -117,6 +132,14 @@ class StitchWindow(Adw.ApplicationWindow):
         )
 
     def on_end(self, controller: Gtk.GestureDrag, offset_x, offset_y):
+        target = controller.get_widget()
+        assert target is not None
+
+        current_pos = self.fixed.get_child_position(target)
+        scaled_x = current_pos[0] * 10
+        scaled_y = current_pos[1] * 10
+        target.update_position(scaled_x, scaled_y)
+        print(f"{target.name} at position {target.x}, {target.y}")
         # TODO: Add update "real" position for final export to outputs.kdl
         pass
 
