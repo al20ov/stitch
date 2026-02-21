@@ -6,22 +6,24 @@ template $stitch_window: Adw.ApplicationWindow {
   default-height: 600;
   title: _("Stitch");
 
-  Overlay {
-    Fixed fixed {}
+  content: Adw.ToastOverlay toast_overlay {
+    Overlay {
+      Fixed fixed {}
 
-    [overlay]
-    Button {
-      label: _("Save");
-      halign: end;
-      valign: start;
-      margin-top: 12;
-      margin-end: 12;
+      [overlay]
+      Button {
+        label: _("Save");
+        halign: end;
+        valign: start;
+        margin-top: 12;
+        margin-end: 12;
 
-      styles [
-        "suggested-action",
-      ]
+        styles [
+          "suggested-action",
+        ]
 
-      clicked => $on_save_clicked();
+        clicked => $on_save_clicked();
+      }
     }
-  }
+  };
 }

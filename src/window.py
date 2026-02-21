@@ -4,7 +4,7 @@ from utils.niri import Niri
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gdk, GLib, Gtk
 
 from output_widget import OutputWidget
 
@@ -14,6 +14,7 @@ class StitchWindow(Adw.ApplicationWindow):
     __gtype_name__ = "stitch_window"
 
     fixed: Gtk.Fixed = Gtk.Template.Child()
+    toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -86,10 +87,25 @@ class StitchWindow(Adw.ApplicationWindow):
             for output in self.outputs
         ]
         self.niri.save_config(outputs_data)
+        self.show_saved_notification()
+
+    def show_saved_notification(self):
+        toast = Adw.Toast.new("Saved")
+        toast.set_timeout(2)
+        self.toast_overlay.add_toast(toast)
 
     def on_begin(self, controller: Gtk.GestureDrag, _start_x, _start_y):
         target = controller.get_widget()
         assert target is not None
+
+        grabbing_cursor = Gdk.Cursor.new_from_name("grabbing", None)
+        target.set_cursor(grabbing_cursor)
+
+        native = self.get_native()
+        if native:
+            surface = native.get_surface()
+            if surface:
+                surface.set_cursor(grabbing_cursor)
 
         current_pos = self.fixed.get_child_position(target)
         px, py = self.get_pointer_position()
@@ -162,6 +178,12 @@ class StitchWindow(Adw.ApplicationWindow):
     def on_end(self, controller: Gtk.GestureDrag, offset_x, offset_y):
         target = controller.get_widget()
         assert target is not None
+
+        target.set_cursor(Gdk.Cursor.new_from_name("grab", None))
+
+        if native := self.get_native():
+            if surface := native.get_surface():
+                surface.set_cursor(None)
 
         current_pos = self.fixed.get_child_position(target)
         scaled_x = current_pos[0] * 10
