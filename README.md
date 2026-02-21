@@ -21,7 +21,7 @@ TODO: Click on a display's Gtk.Box and it brings up a Gtk.Popover where you can 
 
 When you're done, you can save the layout, which will then generate a piece of Niri config in KDL format and write it to `~/.config/niri/outputs.kdl`. If that file is included in the main `~/.config/niri/config.kdl`, Niri should reload its config and apply it if it's considered valid.
 
-## Useful resources (mainly bookmarks for me since they're weirdly hard to stumble across on google??)
+## Useful resources
 
 1. Blueprint documentation: https://gnome.pages.gitlab.gnome.org/blueprint-compiler/index.html
 
