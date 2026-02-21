@@ -2,6 +2,8 @@
 
 Output management for Niri similar to `nwg-displays`.
 
+<img width="954" height="625" alt="image" src="https://github.com/user-attachments/assets/4a996acd-befc-4feb-acec-7c9c1bd7231b" />
+
 ## Dependencies
 
 ### Void Linux
