@@ -1,0 +1,8 @@
+{% for output in outputs %}
+output "{{ output.name }}" {
+    {% if output.mode %}mode "{{ output.mode }}"{% endif %}
+    scale {{ output.scale }}
+    transform "{{ output.transform }}"
+    position x={{ output.x }} y={{ output.y }}
+}
+{% endfor %}

@@ -2,6 +2,8 @@ import json
 import os
 import socket
 
+from jinja2 import Template
+
 
 class Niri:
     def __init__(self):
@@ -14,8 +16,16 @@ class Niri:
         self.outputs = self._get_outputs()
         self.sock.close()
 
-    def save_config(self):
-        pass
+    def save_config(self, outputs_data):
+        template_path = os.path.join(os.path.dirname(__file__), "outputs.kdl.j2")
+        with open(template_path, "r") as f:
+            template = Template(f.read())
+
+        rendered = template.render(outputs=outputs_data)
+
+        config_path = os.path.expanduser("~/.config/niri/outputs.kdl")
+        with open(config_path, "w") as f:
+            f.write(rendered)
 
     def _get_outputs(self):
         self.sock.sendall(b'"Outputs"')

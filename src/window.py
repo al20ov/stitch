@@ -54,10 +54,38 @@ class StitchWindow(Adw.ApplicationWindow):
                 name=key,
                 x=scaled_x,
                 y=scaled_y,
+                mode=self._format_mode(value),
+                scale=details["scale"],
+                transform=details["transform"].lower(),
             )
             output.add_controller(controller)
             self.fixed.put(output, scaled_x, scaled_y)
             self.outputs.append(output)
+
+    def _format_mode(self, output_value):
+        current_mode_idx = output_value.get("current_mode")
+        modes = output_value.get("modes", [])
+        if current_mode_idx is not None and 0 <= current_mode_idx < len(modes):
+            m = modes[current_mode_idx]
+            # Format as "WxH@REFRESH"
+            refresh = m["refresh_rate"] / 1000.0
+            return f"{m['width']}x{m['height']}@{refresh:.3f}"
+        return ""
+
+    @Gtk.Template.Callback()
+    def on_save_clicked(self, _button):
+        outputs_data = [
+            {
+                "name": output.name,
+                "x": output.x,
+                "y": output.y,
+                "mode": output.mode,
+                "scale": output.scale,
+                "transform": output.transform,
+            }
+            for output in self.outputs
+        ]
+        self.niri.save_config(outputs_data)
 
     def on_begin(self, controller: Gtk.GestureDrag, _start_x, _start_y):
         target = controller.get_widget()
@@ -140,7 +168,6 @@ class StitchWindow(Adw.ApplicationWindow):
         scaled_y = current_pos[1] * 10
         target.update_position(scaled_x, scaled_y)
         print(f"{target.name} at position {target.x}, {target.y}")
-        # TODO: Add update "real" position for final export to outputs.kdl
         pass
 
     def get_pointer_position(self):

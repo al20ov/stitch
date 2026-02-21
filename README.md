@@ -1,6 +1,27 @@
 # Stitch
 
-## Useful resources
+Output management for Niri similar to `nwg-displays`.
+
+## Dependencies
+
+### Void Linux
+
+- python3
+- python3-gobject
+- python3-Jinja2
+- ...
+
+## Loose description of how it works
+
+The first thing this program does is get a list of outputs from Niri over its UNIX domain socket (path in $NIRI_SOCKET) by sending "Outputs" (with the quotes). That gives us a JSON array (see `printf '"Outputs"' | socat STDIO $NIRI_SOCKET | jq .` for pretty format).
+
+Then, that array is loaded and each output/display becomes a Gtk.Box that you can drag within a Gtk.Fixed with a Gtk.GestureDrag to arrange your displays.
+
+TODO: Click on a display's Gtk.Box and it brings up a Gtk.Popover where you can change the display's properties such as resolution, scale, rotation, etc...
+
+When you're done, you can save the layout, which will then generate a piece of Niri config in KDL format and write it to `~/.config/niri/outputs.kdl`. If that file is included in the main `~/.config/niri/config.kdl`, Niri should reload its config and apply it if it's considered valid.
+
+## Useful resources (mainly bookmarks for me since they're weirdly hard to stumble across on google??)
 
 1. Blueprint documentation: https://gnome.pages.gitlab.gnome.org/blueprint-compiler/index.html
 
