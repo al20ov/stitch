@@ -8,6 +8,9 @@ Output management for Niri similar to `nwg-displays`.
 
 ### Void Linux
 
+- gtk4-devel
+- libadwaita-devel
+- blueprint-compiler
 - python3
 - python3-gobject
 - python3-Jinja2

@@ -4,7 +4,7 @@ from utils.niri import Niri
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, GLib, Gtk
+from gi.repository import Adw, Gdk, Gtk
 
 from output_widget import OutputWidget
 
@@ -116,7 +116,7 @@ class StitchWindow(Adw.ApplicationWindow):
         )
 
     def on_update(self, controller: Gtk.GestureDrag, _offset_x, _offset_y):
-        snap_threshold = 16.0
+        snap_threshold = 12.0
         target = controller.get_widget()
         assert target is not None
 
