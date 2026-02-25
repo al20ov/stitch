@@ -2,7 +2,7 @@
 
 Output management for Niri similar to `nwg-displays`.
 
-<img width="954" height="625" alt="image" src="https://github.com/user-attachments/assets/4a996acd-befc-4feb-acec-7c9c1bd7231b" />
+<img width="2559" height="1440" alt="image" src="https://github.com/user-attachments/assets/2616751e-8990-43c3-add1-f832b8afc6a2" />
 
 ## Dependencies
 
@@ -22,9 +22,9 @@ The first thing this program does is get a list of outputs from Niri over its UN
 
 Then, that array is loaded and each output/display becomes a Gtk.Box that you can drag within a Gtk.Fixed with a Gtk.GestureDrag to arrange your displays.
 
-TODO: Click on a display's Gtk.Box and it brings up a Gtk.Popover where you can change the display's properties such as resolution, scale, rotation, etc...
+Click on a display and it brings up a Gtk.Popover where you can change the display's properties such as resolution, refresh rate, scale, etc...
 
-When you're done, you can save the layout, which will then generate a piece of Niri config in KDL format and write it to `~/.config/niri/outputs.kdl`. If that file is included in the main `~/.config/niri/config.kdl`, Niri should reload its config and apply it if it's considered valid.
+When you're done, you can save the layout, which will then generate a piece of Niri config in KDL format and write it to `~/.config/niri/outputs.kdl`. If that file is included in the main `~/.config/niri/config.kdl`, Niri should reload its config and apply it.
 
 ## Useful resources
 
