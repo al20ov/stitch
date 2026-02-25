@@ -8,7 +8,9 @@ template $stitch_window: Adw.ApplicationWindow {
 
   content: Adw.ToastOverlay toast_overlay {
     Overlay {
-      Fixed fixed {}
+      Fixed fixed {
+        focusable: true;
+      }
 
       [overlay]
       Button {

@@ -1,6 +1,8 @@
 using Gtk 4.0;
 
 template $output_widget: Gtk.Box {
+  focusable: true;
+
   css-classes: [
     "card",
     "activatable",
@@ -52,8 +54,28 @@ template $output_widget: Gtk.Box {
   }
 
   Gtk.Popover popover {
-    Label {
-      label: "Settings";
+    autohide: true;
+    position: bottom;
+
+    Gtk.Box {
+      orientation: vertical;
+      spacing: 8;
+      margin-top: 8;
+      margin-bottom: 8;
+      margin-start: 8;
+      margin-end: 8;
+
+      Label {
+        label: "Mode";
+        halign: start;
+        css-classes: [
+          "caption",
+        ];
+      }
+
+      Gtk.DropDown mode_dropdown {
+        notify::selected => $on_mode_selected();
+      }
     }
   }
 }

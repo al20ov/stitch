@@ -27,6 +27,13 @@ class Niri:
         with open(config_path, "w") as f:
             f.write(rendered)
 
+    @staticmethod
+    def format_mode(mode):
+        width = mode.get("width")
+        height = mode.get("height")
+        refresh = mode.get("refresh_rate", 0) / 1000.0
+        return f"{width}x{height}@{refresh:.3f}"
+
     def _get_outputs(self):
         self.sock.sendall(b'"Outputs"')
         self.sock.shutdown(socket.SHUT_WR)

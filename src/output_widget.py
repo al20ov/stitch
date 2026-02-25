@@ -19,6 +19,7 @@ class OutputWidget(Gtk.Box):
     __gtype_name__ = "output_widget"
 
     popover: Gtk.Popover = Gtk.Template.Child()
+    mode_dropdown: Gtk.DropDown = Gtk.Template.Child()
 
     make = GObject.Property(type=str, default="")
     model = GObject.Property(type=str, default="")
@@ -34,8 +35,18 @@ class OutputWidget(Gtk.Box):
     transform = GObject.Property(type=str, default="normal")
 
     def __init__(self, **kwargs):
+        modes_data = kwargs.pop("modes", [])
+        current_mode_idx = kwargs.pop("current_mode_index", 0)
+
         super().__init__(**kwargs)
         self.init_template()
+
+        self.modes_list = Gtk.StringList.new([m["formatted"] for m in modes_data])
+        self.mode_dropdown.set_model(self.modes_list)
+        if len(modes_data) > 0:
+            self.mode_dropdown.set_selected(current_mode_idx)
+
+        self.popover.set_autohide(True)
 
         self.set_cursor(Gdk.Cursor.new_from_name("grab", None))
 
@@ -44,7 +55,19 @@ class OutputWidget(Gtk.Box):
         click_gesture.connect("pressed", self.on_click)
         self.add_controller(click_gesture)
 
+    @Gtk.Template.Callback()
+    def on_mode_selected(self, dropdown, _pspec):
+        selected_item = dropdown.get_selected_item()
+        if selected_item:
+            self.mode = selected_item.get_string()
+
     def on_click(self, _gesture, _n_press, _x, _y):
+        rect = Gdk.Rectangle()
+        rect.x = 0
+        rect.y = self.get_allocated_height()
+        rect.width = self.get_allocated_width()
+        rect.height = 1
+        self.popover.set_pointing_to(rect)
         self.popover.popup()
 
     def update_dimensions(self, width, height):

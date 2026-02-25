@@ -47,6 +47,19 @@ class StitchWindow(Adw.ApplicationWindow):
             controller.connect("drag-end", self.on_end)
             self.controllers.append(controller)
 
+            modes = [
+                {
+                    "width": m["width"],
+                    "height": m["height"],
+                    "refresh": m["refresh_rate"] / 1000.0,
+                    "formatted": Niri.format_mode(m),
+                }
+                for m in value.get("modes", [])
+            ]
+            current_mode_idx = value.get("current_mode")
+            if current_mode_idx is None:
+                current_mode_idx = 0
+
             output = OutputWidget(
                 width=scaled_width,
                 height=scaled_height,
@@ -55,23 +68,17 @@ class StitchWindow(Adw.ApplicationWindow):
                 name=key,
                 x=scaled_x,
                 y=scaled_y,
-                mode=self._format_mode(value),
+                mode=Niri.format_mode(value["modes"][current_mode_idx])
+                if value.get("modes") and current_mode_idx < len(value["modes"])
+                else "",
                 scale=details["scale"],
                 transform=details["transform"].lower(),
+                modes=modes,
+                current_mode_index=current_mode_idx,
             )
             output.add_controller(controller)
             self.fixed.put(output, scaled_x, scaled_y)
             self.outputs.append(output)
-
-    def _format_mode(self, output_value):
-        current_mode_idx = output_value.get("current_mode")
-        modes = output_value.get("modes", [])
-        if current_mode_idx is not None and 0 <= current_mode_idx < len(modes):
-            m = modes[current_mode_idx]
-            # Format as "WxH@REFRESH"
-            refresh = m["refresh_rate"] / 1000.0
-            return f"{m['width']}x{m['height']}@{refresh:.3f}"
-        return ""
 
     @Gtk.Template.Callback()
     def on_save_clicked(self, _button):
