@@ -25,6 +25,10 @@ class StitchWindow(Adw.ApplicationWindow):
         self.outputs: list[OutputWidget] = []
         self.controllers: list[Gtk.GestureDrag] = []
 
+        self.fixed_click_gesture = Gtk.GestureClick.new()
+        self.fixed_click_gesture.connect("pressed", lambda *_: self.fixed.grab_focus())
+        self.fixed.add_controller(self.fixed_click_gesture)
+
         for key, value in self.niri.outputs.items():
             details = self.niri.get_output_details(key)
             if not details:

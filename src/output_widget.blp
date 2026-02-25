@@ -2,6 +2,7 @@ using Gtk 4.0;
 
 template $output_widget: Gtk.Box {
   focusable: true;
+  tooltip-text: _("Right-click for settings");
 
   css-classes: [
     "card",
@@ -68,6 +69,7 @@ template $output_widget: Gtk.Box {
       Label {
         label: "Mode";
         halign: start;
+
         css-classes: [
           "caption",
         ];
@@ -75,6 +77,28 @@ template $output_widget: Gtk.Box {
 
       Gtk.DropDown mode_dropdown {
         notify::selected => $on_mode_selected();
+      }
+
+      Separator {}
+
+      Label {
+        label: "Scale";
+        halign: start;
+
+        css-classes: [
+          "caption",
+        ];
+      }
+
+      Gtk.SpinButton scale_spin {
+        adjustment: Gtk.Adjustment {
+          lower: 0.5;
+          upper: 3.0;
+          step-increment: 0.05;
+        };
+
+        digits: 2;
+        value: bind template.scale bidirectional;
       }
     }
   }
